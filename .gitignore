@@ -1,0 +1,30 @@
+# virtual environment
+venv/
+env/
+.venv/
+
+# data files (too large for git)
+data/raw/*.dbn
+data/processed/*.parquet
+
+# outputs
+outputs/
+logs/
+*.log
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# jupyter
+.ipynb_checkpoints/
+
+# os
+.DS_Store
+Thumbs.db
+
+# secrets
+.env
+*.key
