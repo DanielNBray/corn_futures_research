@@ -28,3 +28,6 @@ Thumbs.db
 # secrets
 .env
 *.key
+
+#cheat sheets
+powershell_cheatsheet.md
