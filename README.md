@@ -9,6 +9,11 @@ Quantitative analysis of CBOT corn futures using Databento market data.
 
 ## Setup
 
+```bash
+pip install -r requirements.txt
+```
+
+
 ### 1. Create virtual environment
 ```bash
 python -m venv venv
