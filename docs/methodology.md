@@ -7,6 +7,17 @@ The chosen schema is level 3 data, specifically market by order (MBO) as it prov
 
 Costs for this: $63.59 USD for [2024-02-04 -> 2026-02-06] @ MBO ($1.80/GB) = 37.9GB
 
+Here is what the data looks like (using 5th Feb 2024 daily data):
+Input:
+```python
+import databento as db
+corn_dbn_file  = db.DBNStore.from_file(r"C:\Users\dannb\_projects\code\active\Researching_CornFutures\corndata_unzippled_db\glbx-mdp3-20240205.mbo.dbn")
+corn_book_df  = corn_dbn_file.to_df()
+corn_book_df 
+```
+Output:
+![Image of sample data visualised in dataframe format](./images/raw_daily_data_view_20240205.png)
+
 The issue now is that all the code examples and tutorials in the databento docs use the API and some variation of client.timeseries.get_range(...), while I'm stuck with a zip file that contains 629 zip files inside which all contain a single .dbn file that holds corn futures data for a particular day. Anyways, I need to find a way to write a program that can use this data the exact same way as the databento api.
 
 Except, since the data is ~40GB and my laptop only has 16GB of memory, I have to think of a sophisticated way to handle the data, especially since I will perform lots of models and operations on it.
@@ -27,6 +38,10 @@ for zst_file in raw.glob("*.zst"):
         with open(out / zst_file.stem, 'wb') as out_f:
             dctx.copy_stream(f, out_f)
 
+```
+
+```bash
+python scripts/process_all_data.py --data-dir data/raw --output data/processed/front_month_trades.parquet
 ```
 
 ## STEP 2: Display
