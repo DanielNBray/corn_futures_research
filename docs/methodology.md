@@ -39,6 +39,25 @@ for zst_file in raw.glob("*.zst"):
             dctx.copy_stream(f, out_f)
 
 ```
+Before I begin, it is probably best to describe what a corn futures contract is. A futures contract is the obligation between a buyer and seller (of corn) to buy/sell corn at the current market price at a set quantity at a future date. And while these financial instruments are intended for farmers and businesses who use corn to hedge risks of corn prices falling/rising; it can be used for speculative purposes - to predict price action and make a profit doing so.
+
+Price action is simple for corn, relative to other assets like cash rate or equities. It is broken down into supply (higher = lower price) and demand (higher = higher price). 
+
+Supply is influenced by production (weather, agri-tech), transport, storage, cost of alternative crops (influences a farmers decision to plant corn, or plant something like soybean if it can be sold for higher price).
+
+Demand is influenced by the demand of corns by products: sweetner (HFCS), cornstarch, Biofuel (ethonol), Live-stock. And therefore this demand can be extrapolated by price movements in companies that rely heavily on these by products. For example, an increase in Pepsi's market cap as a result of an increase in demand for pepsi drinks would indicate a higher demand for sweetner which would result in a higher demand for CORN!!
+
+
+For the first step, visualising the data, I will use the front month futures contract as the representation of the price of corn at a given time. This is because corn futures is in contango, meaning later expiring contracts are priced higher to account for storage and financing costs embedded in defferred contracts. And the front-month contract minimises this variable and more closely represents what someone would buy/sell corn for at a given time.
+
+
+
+
+
+
+
+
+
 
 ```bash
 python scripts/process_all_data.py --data-dir data/raw --output data/processed/front_month_trades.parquet
