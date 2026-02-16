@@ -59,9 +59,21 @@ When it comes to actually trading futures, a trader must understand leverage. Fo
 # Visualising Data
 For the first step (visualising the data), I will use the front-month futures contract as the representation of the price of corn at a given time. This is because corn futures are often in contango, meaning later-expiring contracts are priced higher to account for storage and financing costs embedded in deferred contracts. The front-month contract minimizes this effect and more closely represents what someone would buy/sell corn for at a given time.
 
-To build a continuous front-month trades dataset for analysis, I run:
+## Data pipeline
+
+The raw MBO data is the most granular schema Databento offers — every individual order event. But most analysis doesn't need that level of detail. Instead of downloading separate datasets, the processing script converts MBO on the fly into whatever we need:
+
+- **`front_month_trades.parquet`** — just trade events (price, size, side). Used for OHLCV charts, returns, volatility, risk metrics. Lightweight.
+- **`front_month_trades_book.parquet`** — trade events + 3 levels of bid/ask book snapshots. Used for microstructure analysis, spread checks, and any module that needs order book context.
+
+Both only include the front-month contract for each date (auto-detected via CME expiration rules). The script is incremental — if you add new .dbn files and re-run, it only processes the new ones.
+
 ```bash
-python scripts/process_all_data.py --data-dir data/raw --output data/processed/front_month_trades.parquet
+# trades only
+python scripts/process_all_data.py --data-dir data/raw --mode trades
+
+# trades + book depth
+python scripts/process_all_data.py --data-dir data/raw --mode trades_with_book
 ```
 
 ## STEP 2: Display

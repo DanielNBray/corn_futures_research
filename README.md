@@ -24,7 +24,11 @@ pip install -r requirements.txt
 
 ### 3. Run the data pipeline
 ```bash
-python scripts/process_all_data.py --data-dir data/raw --output data/processed/front_month_trades.parquet
+# trades only (price, size, side) — used for OHLCV, charts, returns, risk
+python scripts/process_all_data.py --data-dir data/raw --mode trades
+
+# trades + 3 levels of bid/ask book — used for microstructure & spread analysis
+python scripts/process_all_data.py --data-dir data/raw --mode trades_with_book
 ```
 
 ### 4. Open notebooks
