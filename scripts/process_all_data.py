@@ -1,12 +1,6 @@
 """
-builds continuous front month corn futures datasets from raw databento .dbn files.
-
-supports two output modes:
-  - "trades"          -> just trade events (price, size, side)
-  - "trades_with_book" -> trade events + 3 levels of bid/ask book snapshots
-
-the raw MBO data can be converted to other schemas on the fly via databento's
-store.to_df(schema=...) — no need to re-download data.
+builds a continuous front month corn futures series from raw databento .dbn files.
+works with any databento schema (MBO, MBP-10, etc) — keeps whatever columns are available.
 """
 
 import argparse
@@ -32,28 +26,16 @@ CORN_MONTHS = {
     'Z': 12,  # dec
 }
 
-# output mode configs: schema to pass to databento, columns to keep, default filename
-OUTPUT_MODES = {
-    'trades': {
-        'schema': None,            # raw MBO, filter to action == 'T'
-        'columns': ['ts_event', 'price', 'size', 'side', 'symbol'],
-        'default_output': 'data/processed/front_month_trades.parquet',
-    },
-    'trades_with_book': {
-        'schema': 'mbp-10',       # converts MBO -> 10-level book, we keep 3
-        'columns': [
-            'ts_event', 'price', 'size', 'side',                  # execution
-            'bid_px_00', 'ask_px_00', 'bid_sz_00', 'ask_sz_00',   # book level 0
-            'bid_px_01', 'ask_px_01', 'bid_sz_01', 'ask_sz_01',   # book level 1
-            'bid_px_02', 'ask_px_02', 'bid_sz_02', 'ask_sz_02',   # book level 2
-            'symbol',
-        ],
-        'default_output': 'data/processed/front_month_trades_book.parquet',
-    },
-}
-
-# generated dynamically in build_continuous_series()
-FRONT_MONTH_SCHEDULE = []
+# columns to keep if they exist in the data.
+# MBO files will only have the trade cols.
+# MBP-10 files will also have the book cols.
+DESIRED_COLS = [
+    'ts_event', 'price', 'size', 'side',                  # trade execution
+    'bid_px_00', 'ask_px_00', 'bid_sz_00', 'ask_sz_00',   # book level 0
+    'bid_px_01', 'ask_px_01', 'bid_sz_01', 'ask_sz_01',   # book level 1
+    'bid_px_02', 'ask_px_02', 'bid_sz_02', 'ask_sz_02',   # book level 2
+    'symbol',
+]
 
 
 def generate_front_month_schedule(start_year: int, end_year: int) -> list[list[str]]:
@@ -85,6 +67,10 @@ def get_year_range_from_files(data_dir: Path) -> tuple[int, int]:
     return min(years), max(years)
 
 
+# generated dynamically in build_continuous_series()
+FRONT_MONTH_SCHEDULE = []
+
+
 def get_front_month(date_str: str) -> str | None:
     """return the front month contract symbol for a given date."""
     trade_date = datetime.strptime(date_str, '%Y%m%d')
@@ -98,8 +84,8 @@ def get_front_month(date_str: str) -> str | None:
     return None
 
 
-def process_dbn_file(file_path: Path, mode_config: dict) -> pd.DataFrame | None:
-    """extract front month trades from a single dbn file using the given mode config."""
+def process_dbn_file(file_path: Path) -> pd.DataFrame | None:
+    """extract front month trades from a single dbn file (works with any schema)."""
     try:
         date_str = file_path.stem.split('-')[2].split('.')[0]
         front_contract = get_front_month(date_str)
@@ -108,13 +94,7 @@ def process_dbn_file(file_path: Path, mode_config: dict) -> pd.DataFrame | None:
             return None
 
         store = db.DBNStore.from_file(str(file_path))
-
-        # convert schema if needed (e.g. MBO -> MBP-10 for book data)
-        schema = mode_config['schema']
-        if schema:
-            df = store.to_df(schema=schema)
-        else:
-            df = store.to_df()
+        df = store.to_df()
 
         trades = df[(df['action'] == 'T') & (df['symbol'] == front_contract)].copy()
 
@@ -122,8 +102,8 @@ def process_dbn_file(file_path: Path, mode_config: dict) -> pd.DataFrame | None:
             logger.debug(f"{date_str}: no {front_contract} trades found")
             return None
 
-        # keep only columns that exist in this schema
-        available_cols = [col for col in mode_config['columns'] if col in trades.columns]
+        # keep only columns that exist (MBO won't have book cols, MBP-10 will)
+        available_cols = [col for col in DESIRED_COLS if col in trades.columns]
         trades = trades[available_cols]
         trades['date'] = date_str
 
@@ -135,15 +115,12 @@ def process_dbn_file(file_path: Path, mode_config: dict) -> pd.DataFrame | None:
         return None
 
 
-def build_continuous_series(data_dir: Path, output_path: Path, mode: str) -> None:
+def build_continuous_series(data_dir: Path, output_path: Path) -> None:
     """process new dbn files and append to existing parquet (skips already-processed dates)."""
     global FRONT_MONTH_SCHEDULE
 
-    mode_config = OUTPUT_MODES[mode]
-
     dbn_files = sorted(data_dir.glob('*.dbn'))
     logger.info(f"found {len(dbn_files)} dbn files in {data_dir}")
-    logger.info(f"output mode: {mode}")
 
     if not dbn_files:
         logger.error(f"no .dbn files found in {data_dir}")
@@ -179,8 +156,8 @@ def build_continuous_series(data_dir: Path, output_path: Path, mode: str) -> Non
     logger.info(f"processing {len(new_files)} new files (skipping {len(dbn_files) - len(new_files)} already processed)")
 
     trades_list = []
-    for file_path in tqdm(new_files, desc=f"processing ({mode})"):
-        result = process_dbn_file(file_path, mode_config)
+    for file_path in tqdm(new_files, desc="processing dbn files"):
+        result = process_dbn_file(file_path)
         if result is not None:
             trades_list.append(result)
 
@@ -210,25 +187,19 @@ def build_continuous_series(data_dir: Path, output_path: Path, mode: str) -> Non
 
 def main():
     parser = argparse.ArgumentParser(
-        description="build continuous front month corn futures datasets"
+        description="build continuous front month corn futures dataset"
     )
     parser.add_argument(
         '--data-dir',
         type=Path,
         required=True,
-        help='directory containing dbn files'
-    )
-    parser.add_argument(
-        '--mode',
-        choices=list(OUTPUT_MODES.keys()),
-        default='trades',
-        help='output mode: "trades" (price/size/side only) or "trades_with_book" (+ 3 levels of bid/ask)'
+        help='directory containing .dbn files'
     )
     parser.add_argument(
         '--output',
         type=Path,
-        default=None,
-        help='output parquet path (defaults based on mode)'
+        required=True,
+        help='output parquet file path'
     )
 
     args = parser.parse_args()
@@ -237,10 +208,7 @@ def main():
         logger.error(f"data directory not found: {args.data_dir}")
         return
 
-    # use mode-specific default output if not provided
-    output_path = args.output or Path(OUTPUT_MODES[args.mode]['default_output'])
-
-    build_continuous_series(args.data_dir, output_path, args.mode)
+    build_continuous_series(args.data_dir, args.output)
 
 
 if __name__ == '__main__':
@@ -250,13 +218,9 @@ if __name__ == '__main__':
 '''
 usage:
 
-# trades only (lightweight, for OHLCV / charts / returns / risk)
-python scripts/process_all_data.py --data-dir data/raw --mode trades
+# process MBO data (trades only — no bid/ask cols available)
+python scripts/process_all_data.py --data-dir data/raw/mbo --output data/processed/front_month_MBO.parquet
 
-# trades + 3 levels of bid/ask (for microstructure / spread analysis)
-python scripts/process_all_data.py --data-dir data/raw --mode trades_with_book
-
-# both at once
-python scripts/process_all_data.py --data-dir data/raw --mode trades && python scripts/process_all_data.py --data-dir data/raw --mode trades_with_book
+# process MBP-10 data (trades + 3 levels of bid/ask)
+python scripts/process_all_data.py --data-dir data/raw/mbp10 --output data/processed/front_month_MBP10.parquet
 '''
-

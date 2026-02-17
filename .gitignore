@@ -4,8 +4,14 @@ env/
 .venv/
 
 # data files (too large for git)
-data/raw/*.dbn
+data/raw/mbo/*.dbn
+data/raw/mbp10/*.dbn
 data/processed/*.parquet
+data/raw/*.dbn
+data/raw/
+data/processed/
+data/
+
 
 # outputs
 outputs/
@@ -34,3 +40,5 @@ powershell_cheatsheet.md
 todo.md
 project_structure.md
 goal.md
+
+order_book.xml

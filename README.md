@@ -3,7 +3,7 @@
 Quantitative analysis of CBOT corn futures using Databento market data.
 
 ## Goals
-1. Data pipeline: continuous front month series from 2 years of MBO data
+1. Data pipeline: continuous front month series from 2 years of market data
 2. Price visualization, OHLCV charting, volume analysis
 3. Technical indicators implemented from scratch (SMA, EMA, VWAP, Bollinger Bands)
 4. Stochastic analysis (return distributions, drift, volatility, GBM, Monte Carlo, GARCH, Ornstein-Uhlenbeck)
@@ -24,11 +24,8 @@ pip install -r requirements.txt
 
 ### 3. Run the data pipeline
 ```bash
-# trades only (price, size, side) — used for OHLCV, charts, returns, risk
-python scripts/process_all_data.py --data-dir data/raw --mode trades
-
-# trades + 3 levels of bid/ask book — used for microstructure & spread analysis
-python scripts/process_all_data.py --data-dir data/raw --mode trades_with_book
+# process MBP-10 data (trades + 3 levels of bid/ask — primary dataset)
+python scripts/process_all_data.py --data-dir data/raw/mbp10 --output data/processed/front_month_MBP10.parquet
 ```
 
 ### 4. Open notebooks
@@ -36,9 +33,15 @@ python scripts/process_all_data.py --data-dir data/raw --mode trades_with_book
 jupyter notebook
 ```
 
+## Data
+- **Raw:** `.dbn` files from Databento, split by day, stored in `data/raw/mbp10/`
+- **Processed:** Front-month continuous series as parquet in `data/processed/`
+- MBO data (order-level) also available in `data/raw/mbo/` for future order book reconstruction work
+
 ## Project Structure
 ```
-├── data/raw/              Raw .dbn files (gitignored)
+├── data/raw/mbo/          Raw MBO .dbn files (gitignored)
+├── data/raw/mbp10/        Raw MBP-10 .dbn files (gitignored)
 ├── data/processed/        Parquet outputs (gitignored)
 ├── docs/                  Methodology, results, project docs
 ├── notebooks/             Jupyter notebooks (one per analysis stage)
