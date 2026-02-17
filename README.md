@@ -28,11 +28,6 @@ pip install -r requirements.txt
 python scripts/process_all_data.py --data-dir data/raw/mbp10 --output data/processed/front_month_MBP10.parquet
 ```
 
-### 4. Open notebooks
-```bash
-jupyter notebook
-```
-
 ## Data
 - **Raw:** `.dbn` files from Databento, split by day, stored in `data/raw/mbp10/`
 - **Processed:** Front-month continuous series as parquet in `data/processed/`
