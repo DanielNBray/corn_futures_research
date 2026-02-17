@@ -1,0 +1,6 @@
+
+
+# data paths, sample from each for now
+mbo_data_path-20260205: str = "../data/raw/mbo/glbx-mdp3-20260205.mbo.dbn" # sample mbo data file
+mbp10_data_path-20260205: str = "../data/raw/mbp10/glbx-mdp10-20260205.mbp10.dbn" # sample mbp-10 data file
+
