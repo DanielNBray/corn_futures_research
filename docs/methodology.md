@@ -14,9 +14,12 @@ The MBO data is stored in `data/raw/mbo/` and was processed into `data/processed
 
 The problem: MBO data doesn't include bid/ask book snapshots. To get bid/ask spread data from MBO, you'd need to simulate the full limit order book by replaying every add/cancel/modify event — that's essentially building an order book reconstruction engine, which is an entire project on its own (and one I'm keen to do in the future).
 
-For this project, I need bid/ask data for microstructure analysis (Module 2.5), spread checks, and order book context. So instead of spending days building a book simulator, I purchased MBP-10 data directly — it gives me 10 levels of bid/ask depth at every book update, pre-computed by Databento.
+For this project, I need bid/ask data for microstructure analysis, spread checks, and order book context. So instead of spending days building a book simulator, I purchased MBP-10 data directly — it gives me 10 levels of bid/ask depth at every book update, pre-computed by Databento.
 
-MBP-10 data is stored in `data/raw/mbp10/` and gets processed into `data/processed/front_month_MBP10.parquet` (front-month trades + 3 levels of bid/ask).
+MBP-10 data is stored in `data/raw/MPB10_20250216-20260216/` and gets processed into `data/processed/front_month_MBP10.parquet` (front-month trades + 5 levels of bid/ask).
+
+Contrary to what you might initially think, MBP-10 data is actually much larger (in terms of GB) even though it holds less information. This is because after every action in the markets (e.g add order, cancel order, etc) a new row prints out the entire orderbook. While for MBO data, when a new action occurs, the of data only describes features for that specific action, not for the entire orderbook. Note that when I say 'the entire orderbook' I am referring to the 10 levels of bid/ask that MBP-10 data provides; saying 'the entire orderbook' just flows better and gets the idea across nicely.
+
 
 ### Data pipeline
 
