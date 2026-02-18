@@ -14,7 +14,7 @@ data/
 
 
 # outputs
-outputs/
+          
 logs/
 *.log
 
