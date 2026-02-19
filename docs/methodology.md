@@ -20,6 +20,21 @@ MBP-10 data is stored in `data/raw/MPB10_20250216-20260216/` and gets processed 
 
 Contrary to what you might initially think, MBP-10 data is actually much larger (in terms of GB) even though it holds less information. This is because after every action in the markets (e.g add order, cancel order, etc) a new row prints out the entire orderbook. While for MBO data, when a new action occurs, the of data only describes features for that specific action, not for the entire orderbook. Note that when I say 'the entire orderbook' I am referring to the 10 levels of bid/ask that MBP-10 data provides; saying 'the entire orderbook' just flows better and gets the idea across nicely.
 
+### Looking at the Data
+For this we will look at the 18th of Jan 2026 Daily Data. Here is a display of the top 5 rows, and 73 columns (shown across 5 different images.)
+
+![](./images/ts_sequence.png)
+![](./images/bid00_ask02.png)
+![](./images/bid03_ask05.png)
+![](./images/bid06_ask08.png)
+![](./images/bid09_mid.png)
+
+Context for the image:
+
+**ACTION**: A = add, C = cancel, M = modify, R = clear, T = trade, F = fill, N = none.  
+**SIDE**: A = ask (sell order), B = bid (buy order), N = none
+
+And it is also important to distinguish what the difference with size and count is (e.g. ask_sz_00 vs ask_ct_00). Size is the total quantity of contracts at that price level, while count is how many different orders make up that quantity.
 
 ### Data pipeline
 
