@@ -45,3 +45,5 @@ order_book.xml
 
 #mess/old shit
 01_data_exploration_old.ipynb
+scrap_for_MBP10_data.ipynb
+process_all_data.py

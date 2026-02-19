@@ -48,7 +48,7 @@ def generate_front_month_schedule(start_year: int, end_year: int) -> list[list[s
         for month_letter, month_num in CORN_MONTHS.items():
             # last trading day = business day before the 15th
             expiration = datetime(year, month_num, 14)
-            while expiration.weekday() >= 5:
+            while expiration.weekday() >= 5: # if it is a weekend
                 expiration -= timedelta(days=1)
 
             schedule.append([expiration.strftime('%Y%m%d'), f'ZC{month_letter}{year_digit}'])
