@@ -34,8 +34,7 @@ DESIRED_COLS = [
     'bid_px_00', 'ask_px_00', 'bid_sz_00', 'ask_sz_00',   # book level 0
     'bid_px_01', 'ask_px_01', 'bid_sz_01', 'ask_sz_01',   # book level 1
     'bid_px_02', 'ask_px_02', 'bid_sz_02', 'ask_sz_02',   # book level 2
-    'symbol',
-]
+    'symbol',]
 
 
 def generate_front_month_schedule(start_year: int, end_year: int) -> list[list[str]]:
@@ -66,10 +65,8 @@ def get_year_range_from_files(data_dir: Path) -> tuple[int, int]:
     years = [int(f.stem.split('-')[2].split('.')[0][:4]) for f in dbn_files]
     return min(years), max(years)
 
-
 # generated dynamically in build_continuous_series()
 FRONT_MONTH_SCHEDULE = []
-
 
 def get_front_month(date_str: str) -> str | None:
     """return the front month contract symbol for a given date."""
@@ -82,7 +79,6 @@ def get_front_month(date_str: str) -> str | None:
 
     logger.warning(f"no front month found for {date_str} - outside schedule range")
     return None
-
 
 def process_dbn_file(file_path: Path) -> pd.DataFrame | None:
     """extract front month trades from a single dbn file (works with any schema)."""
@@ -224,3 +220,10 @@ python scripts/process_all_data.py --data-dir data/raw/mbo --output data/process
 # process MBP-10 data (trades + 3 levels of bid/ask)
 python scripts/process_all_data.py --data-dir data/raw/mbp10 --output data/processed/front_month_MBP10.parquet
 '''
+
+
+
+
+
+
+

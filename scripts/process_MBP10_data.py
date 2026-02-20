@@ -34,11 +34,10 @@ COLUMNS_TO_KEEP = ["ts_event","action","side","depth","price","size","flags",
     "bid_px_03","ask_px_03","bid_sz_03","ask_sz_03","bid_ct_03","ask_ct_03",
     "bid_px_04","ask_px_04","bid_sz_04","ask_sz_04","bid_ct_04","ask_ct_04",
     "bid_px_05","ask_px_05","bid_sz_05","ask_sz_05","bid_ct_05","ask_ct_05",
-    "symbol",
-]
+    "symbol"]
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
