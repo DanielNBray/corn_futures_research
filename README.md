@@ -35,16 +35,15 @@ python scripts/process_all_data.py --data-dir data/raw/mbp10 --output data/proce
 
 ## Project Structure
 ```
-├── data/raw/mbo/          Raw MBO .dbn files (gitignored)
-├── data/raw/mbp10/        Raw MBP-10 .dbn files (gitignored)
-├── data/processed/        Parquet outputs (gitignored)
-├── docs/                  Methodology, results, project docs
-├── notebooks/             Jupyter notebooks (one per analysis stage)
-├── scripts/               Command-line data processing scripts
-├── src/                   Reusable Python package
-│   ├── analysis/          Stochastic metrics, visualization helpers
-│   ├── corn_research/     Data processing, contract calendar
-│   └── features/          Technical indicator calculations
-├── tests/                 Automated tests
+├── data/raw/MBO_20240205-20260205/             Raw MBO .dbn files (gitignored)
+├── data/raw/MBO10_20250216-20260216/           Raw MBP-10 .dbn files (gitignored)
+├── data/processed/                             Parquet outputs (gitignored)
+├── docs/                                       Methodology, results, project docs
+├── notebooks/                                  Jupyter notebooks (one per analysis stage, 7 total)
+├── outputs/                                    Charts and reports related to the research 
+├── src/                                        Reusable Python package
+│   ├── microstructure/                         Process data and calculate features such as OFI, depth imbalance, LOB slope
+│   ├── model/                                  Analysis and implementation of volatility, regime, and proof-of-concept strategy
+│   └── utils/                                  Plotting and helper stuff
 └── requirements.txt
 ```
