@@ -1,1 +1,0 @@
-print("corn_research package loaded")
