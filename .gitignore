@@ -47,3 +47,5 @@ order_book.xml
 01_data_exploration_old.ipynb
 scrap_for_MBP10_data.ipynb
 scripts/process_all_data.py
+notebooks/02_volume_nerdPLOT.ipynb
+notebooks/zc_volume_profile.png
